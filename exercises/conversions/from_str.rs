@@ -2,7 +2,7 @@
 // Additionally, upon implementing FromStr, you can use the `parse` method
 // on strings to generate an object of the implementor type.
 // You can read more about it at https://doc.rust-lang.org/std/str/trait.FromStr.html
-use std::error;
+use std::{error, usize};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -10,8 +10,6 @@ struct Person {
     name: String,
     age: usize,
 }
-
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -26,6 +24,17 @@ struct Person {
 impl FromStr for Person {
     type Err = Box<dyn error::Error>;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.is_empty() { return Err("Empty strings are not allowed".into()) };
+        
+        let split: Vec<&str> = s.splitn(2, ',').collect();
+
+        // Can probably done a lot better.
+        if split.len().ne(&2) || split[0].is_empty() { return Err("The provided string is faulty".into()) }
+
+        let name = split[0].to_string();
+        let age: usize = split[1].parse()?;
+
+        Ok(Person { name, age })
     }
 }
 
